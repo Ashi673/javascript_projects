@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Prediction</title>
+    <!-- Bootstrap CSS link -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- CSS part -->
+    <style>
+        body {
+            background-image: url('weather.png');
+            background-size: cover;
+        }
+        h1 {
+            font-size: 40px;
+            font-weight: bold;
+        }
+        .inputAdd {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        input {
+            width: 500px;
+            align-content: center;
+            font-size: 1rem;
+            padding: .7rem;
+            border: none;
+            border-radius: 10px;
+        }
+        .result {
+            display: none;
+            background-color: white;
+            width: 100%;
+            max-width: 900px;
+            justify-content: center;
+            border-radius: 30px;
+            padding: 10px;
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        #weatherIcon {
+            font-size: 6rem;
+            margin-bottom: 5px;
+            margin-top: 5px;
+            color: #ffc107;
+        }
+        .temperatureElement {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-warning text-center mt-4">Weather Forecast</h1>
+        <p class="text-center lead text-white" style="font-weight: bold;">Real-time weather updates for any city</p>
+        <div class="inputAdd"> 
+            <input type="text" id="cityInput" placeholder="Search for City">
+            <button class="btn btn-warning btn-lg mt-3" onclick="getWeather()" type="button">Check Weather</button>
+            <button class="btn btn-info btn-lg mt-3" onclick="getCurrentLocationWeather()" type="button">Use My Location</button>
+        </div>
+        
+        <div class="result" id="weatherResult">
+            <h1 id="cityName" class="text-warning"></h1>
+            <p>
+                <span id="dy" class="text-warning"></span>
+                <span id="mt" class="text-warning"></span>
+                <span id="dt" class="text-warning"></span>
+                <span id="yr" class="text-warning"></span>
+            </p>
+            <h2 id="temperatureLabel" class="text-success">Temperature in Celsius</h2>
+            <i id="weatherIcon" class="weather-icon"></i>
+            <div class="temperatureElement">
+                <p id="temperature" class="m-5 text-warning"></p>
+                <p id="description" class="m-5 text-warning"></p>
+                <p id="humidity" class="m-5 text-warning"></p>
+                <p id="windSpeed" class="m-5 text-warning"></p>
+            </div>
+            <div class="sunTimes">
+                <p class="text-warning">Sunrise: <span id="sunriseTime"></span></p>
+                <p class="text-warning">Sunset: <span id="sunsetTime"></span></p>
+            </div>
+            <button class="btn btn-outline-warning btn-md" onclick="convertToFahrenheit()">Convert To Fahrenheit/Celsius</button>
+        </div>
+    </div>
+
+    <!-- Javascript Part -->
+    <script>
+        const API_KEY = '30aae3492f4117833699d575ae2d5de0';
+        
+        // Fetch weather by city name
+        async function getWeather() {
+            const city = document.getElementById('cityInput').value.trim();
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error("City not found");
+                }
+
+                const data = await response.json();
+                displayWeather(data);
+            } catch (error) {
+                document.getElementById('cityName').innerText = error.message;
+            }
+        }
+
+        // Fetch weather by current location
+        async function getCurrentLocationWeather() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) {
+                            throw new Error("Unable to fetch location weather");
+                        }
+                        const data = await response.json();
+                        displayWeather(data);
+                    } catch (error) {
+                        document.getElementById('cityName').innerText = error.message;
+                    }
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Display the weather results
+        function displayWeather(data) {
+            document.getElementById('weatherResult').style.display = 'block';
+            document.getElementById('cityName').innerText = `Weather in ${data.name}`;
+            document.getElementById('temperature').innerHTML = `<i class="fa-solid fa-cloud"></i> Temperature: ${Math.round(data.main.temp)}°C`;
+            document.getElementById('temperature').innerHTML = `<i class="fa-solid fa-cloud"></i> Temperature: ${data.main.temp}°C`;
+            document.getElementById('description').innerHTML = `<i class="fa-solid fa-cloud-sun"></i> Conditions: ${data.weather[0].description}`;
+            document.getElementById('humidity').innerHTML = `<i class="fa-solid fa-droplet"></i> Humidity: ${data.main.humidity}%`;
+            document.getElementById('windSpeed').innerHTML = `<i class="fa-solid fa-wind"></i> Wind Speed: ${data.wind.speed} km/h`;
+
+            // Sunrise and Sunset times
+            const sunriseTime = new Date(data.sys.sunrise * 1000);
+            const sunsetTime = new Date(data.sys.sunset * 1000);
+            document.querySelector('.sunTimes').style.display = 'flex';
+            document.querySelector('.sunTimes').style.justifyContent = 'space-around';
+            document.querySelector('.sunTimes').style.alignItems = 'center';
+            document.querySelector('.sunTimes').innerHTML = `
+                <p class="text-warning" style="font-size: 18px; font-weight: bold;">
+                    <i class="fa-solid fa-sun"></i> Sunrise: ${formatTime(sunriseTime)}
+                </p>
+                <p class="text-warning" style="font-size: 18px; font-weight: bold;">
+                    <i class="fa-solid fa-cloud-sun"></i> Sunset: ${formatTime(sunsetTime)}
+                </p>
+            `;
+        }
+
+        // Convert time to hours and minutes
+        function formatTime(date) {
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return `${hours}:${minutes} ${ampm}`;
+        }
+
+        // Function to determine weather icon based on condition
+        function getWeatherIcon(condition) {
+            switch (condition.toLowerCase()) {
+                case 'clear':
+                    return 'sun';
+                case 'clouds':
+                    return 'cloud';
+                case 'rain':
+                    return 'cloud-showers-heavy';
+                case 'snow':
+                    return 'snowflake';
+                case 'thunderstorm':
+                    return 'bolt';
+                default:
+                    return 'smog';
+            }
+        }
+
+        // Conversion Between Farhenhiet and Celsius
+        let isCelsius = true;
+        function convertToFahrenheit() {
+            let temperatureElement = document.getElementById('temperature');
+            let temperatureLabel = document.getElementById('temperatureLabel');
+            let currentTemp = temperatureElement.innerText;
+
+            if (isCelsius) {
+                let celsius = parseFloat(currentTemp.split(":")[1].split("°")[0].trim());
+                let fahrenheit = (celsius * 9/5) + 32;
+                temperatureElement.innerHTML = `<i class="fa-solid fa-cloud"></i> Temperature: ${fahrenheit.toFixed(2)}°F`;
+                temperatureLabel.innerText = "Temperature in Fahrenheit";
+                isCelsius = false;
+            } else {
+                let fahrenheit = parseFloat(currentTemp.split(":")[1].split("°")[0].trim());
+                let celsius = (fahrenheit - 32) * 5/9;
+                temperatureElement.innerHTML = `<i class="fa-solid fa-cloud"></i> Temperature: ${celsius.toFixed(2)}°C`;
+                temperatureLabel.innerText = "Temperature in Celsius";
+                isCelsius = true;
+            }
+        }
+
+        // Display current date
+        const da = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const d = new Date();
+        const dayName = da[d.getDay()];
+        dy.innerText = dayName + ",";
+
+        const month = d.toLocaleString("default", { month: "long" });
+        mt.innerText = month;
+
+        const date = d.getDate();
+        dt.innerText = date + ",";
+
+        const year = d.getFullYear();
+        yr.innerText = year;
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
