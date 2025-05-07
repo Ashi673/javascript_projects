@@ -1,0 +1,21 @@
+{
+    "manifest_version": 3,
+    "name": "Eat A Candy Reminder",
+    "version": "1.0",
+    "description": "Shows a Candy Eating reminder overlay every 30 minutes",
+    "permissions": [
+        "alarms",
+        "scripting",
+        "tabs",
+        "activeTab"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "action": {
+        "default_title": "Eat A Candy Reminder"
+    }
+}
