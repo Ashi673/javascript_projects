@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Styling</title>
+   <!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Popper.js for Bootstrap tooltips and popovers -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+
+
+<style>
+body{
+
+    background-color: bisque;
+}
+.main{
+    height: 500px;
+}
+button{
+    transition: all 0.5s;
+    border-radius: 40%;
+    background-color: rgb(0, 0, 0);
+    color: bisque;
+    font-size: 20px;
+    cursor: pointer;
+}
+button:hover{
+    transform: scale(1.1);
+    background-color: bisque;
+    color: rgb(0, 0, 0);
+
+}
+    </style>
+</head>
+<body>
+    <h2 class="text-uppercase text-center mt-5 text-success">Applying font styles on font using JavaScript</h2>
+<div class="container w-50 mt-5 bg-white main">
+    <div class="d-flex">
+        <button class="p-2 fw-bold mt-2 me-2" id="boldText"><i class="fa-solid fa-bold"></i></button>
+        <button class="p-2 fw-bold mt-2 me-2" id="underText"><i class="fa-solid fa-underline"></i></button>
+        <button class="p-2 fw-bold mt-2 me-2" id="italicText"><i class="fa-solid fa-italic"></i></button>
+        <select class="form-select mt-2" id="fontSelect">
+            <option style="font-family: Arial;">Arial</option>
+            <option style="font-family: Verdana;">Verdana</option>
+            <option style="font-family: Courier New;">Courier New</option>
+            <option style="font-family: Georgia;">Georgia</option>
+            <option style="font-family: Times New Roman;">Times New Roman</option>
+            <option style="font-family: Tahoma;">Tahoma</option>
+            <option style="font-family: Trebuchet MS;">Trebuchet MS</option>
+            <option style="font-family: Impact;">Impact</option>
+            <option style="font-family: Comic Sans MS;">Comic Sans MS</option>
+            <option style="font-family: Lucida Console;">Lucida Console</option>
+        </select>
+    </div>
+    <div class="form-group mt-5">
+        <textarea type="text" class="form-control" rows="4" id="inputText" placeholder="Enter the text"></textarea>
+    </div>
+    <h5 class="text-center mt-2 text-danger overflow-hidden">Apply Effects</h5>
+    <div class="container mt-3" id="getText">
+    </div>
+</div>
+<script>
+    const inputText = document.getElementById("inputText");
+    const getTextDiv = document.getElementById("getText");
+    const fontSelect = document.getElementById("fontSelect");
+    const boldText= document.getElementById("boldText");
+    const underText = document.getElementById("underText");
+    const italicText = document.getElementById("italicText");
+
+    getTextDiv.innerText = "Type and select text here...";
+ document.getElementById("inputText").addEventListener("input", function() {
+        document.getElementById("getText").innerText = this.value;
+    });
+    fontSelect.addEventListener("change", function() {
+    const selectedFont = fontSelect.value;
+    const selection = window.getSelection();
+
+    if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const selectedText = selection.toString();
+
+        if (selectedText) {
+            const parentSpan = range.startContainer.parentNode;
+            if (parentSpan.tagName === "SPAN") {
+                parentSpan.style.fontFamily = selectedFont;
+            } else {
+                const span = document.createElement("span");
+                span.style.fontFamily = selectedFont;
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
+            }
+        }
+    }
+});
+
+[boldText, italicText, underText].forEach(button => {
+    button.addEventListener("click", function() {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            const selectedText = selection.toString();
+            if (selectedText) {
+                const parentSpan = range.startContainer.parentNode;
+
+                if (parentSpan.tagName === "SPAN") {
+                    if (button === boldText) {
+                        if (parentSpan.style.fontWeight === "bold") {
+                            parentSpan.style.fontWeight = "normal";
+                        } else {
+                            parentSpan.style.fontWeight = "bold";
+                        }
+                    }
+                    if (button === italicText) {
+                        if (parentSpan.style.fontStyle === "italic") {
+                            parentSpan.style.fontStyle = "normal"; 
+                        } else {
+                            parentSpan.style.fontStyle = "italic";
+                        }
+                    }
+                    if (button === underText) {
+                        if (parentSpan.style.textDecoration === "underline") {
+                            parentSpan.style.textDecoration = "none"; 
+                        } else {
+                            parentSpan.style.textDecoration = "underline";
+                        }
+                    }
+                } else {
+                    const span = document.createElement("span");
+                    if (button === boldText) {
+                        span.style.fontWeight = "bold";
+                    }
+                    if (button === italicText) {
+                        span.style.fontStyle = "italic";
+                    }
+                    if (button === underText) {
+                        span.style.textDecoration = "underline";
+                    }
+                    span.appendChild(range.extractContents());
+                    range.insertNode(span);
+                }
+                selection.removeAllRanges()
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>

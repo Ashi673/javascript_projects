@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Form</title>
+    <!-- Bootstrap CSS link -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5 justify-content-center">
+    <h2 class="text-center text-warning">Form Validation With Javascript</h2>
+    <form id="myForm" class="mx-auto" style="max-width: 600px;" onsubmit="submit(event)">
+        <div class="form-group">
+            <label for="name">Username</label>
+            <input type="text" class="form-control" id="name" placeholder="Enter your name">
+            <div id="usernameError" class="text-danger mt-2" style="display:none;">Username can only contain alphabets and underscores.</div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter your email">
+            <div id="emailError" class="text-danger mt-2" style="display:none;">Please Enter a Valid Email</div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="Enter your password">
+            <div id="passwordError" class="text-danger mt-2" style="display:none;">Password must be 8 characters</div>
+        </div>
+        <div class="form-group">
+            <label for="cpassword">Confirm Password</label>
+            <input type="password" class="form-control" id="cpassword" placeholder="Enter your confirm password">
+            <div id="cpasswordError" class="text-danger mt-2" style="display:none;">Password not match</div>
+
+        </div>
+
+        <div class="form-group">
+            <label for="message">Any Suggestion</label>
+            <textarea class="form-control" id="message" rows="3" placeholder="Your Suggestions"></textarea>
+            <div id="messageError" class="text-success mt-2">Message Must be less than 255 words</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById("myForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent form submission
+
+        // Get form field values
+        var name = document.getElementById("name").value.trim();
+        var email = document.getElementById("email").value.trim();
+        var password = document.getElementById("password").value.trim();
+        var cpassword = document.getElementById("cpassword").value.trim();
+        var message = document.getElementById("message").value.trim();
+
+        // Check each field individually
+        if (name === "") {
+            alert("Please fill out the name field.");
+        } else if (email === "") {
+            alert("Please fill out the email field.");
+        } else if (password === "") {
+            alert("Please fill out the password field.");
+        } else if (cpassword === "") {
+            alert("Please fill out the confirm password field.");
+        } else if (message === "") {
+            alert("Please fill out the message field.");
+        } else {
+            alert("Form submitted successfully!");
+        }
+    });
+    // Username validation
+    document.getElementById("name").addEventListener("keyup", function() {
+        var username = this.value;
+        var regex = /^[A-Za-z_]+$/;
+        var errorDiv = document.getElementById("usernameError");
+
+        if (!regex.test(username) && username !== "") {
+            errorDiv.style.display = "block";
+        } else {
+            errorDiv.style.display = "none";
+        }
+    });
+
+    // Email validation
+    document.getElementById("email").addEventListener("keyup", function() {
+        var email = this.value;
+        var regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        var errorDiv = document.getElementById("emailError");
+
+        if (!regex.test(email) && email !== "") {
+            errorDiv.style.display = "block";
+        } else {
+            errorDiv.style.display = "none";
+        }
+    });
+
+    // Password validation
+    document.getElementById("password").addEventListener("keyup", function() {
+        var password = this.value;
+        var errorDiv = document.getElementById("passwordError");
+
+        if (password.length < 8) {
+            errorDiv.style.display = "block";
+        } else {
+            errorDiv.style.display = "none";
+        }
+    });
+
+    // Confirm Password validation
+    document.getElementById("cpassword").addEventListener("keyup", function() {
+        var cpassword = this.value;
+        var password = document.getElementById("password").value;
+        var errorDiv = document.getElementById("cpasswordError");
+
+        if (cpassword !== password) {
+            errorDiv.style.display = "block";
+        } else {
+            errorDiv.style.display = "none";
+        }
+    });
+
+    // Message length validation
+    var maxLength = 255;
+    document.getElementById("message").addEventListener("keyup", function() {
+        var message = this.value;
+        var remaining = maxLength - message.length;
+        var charCountDiv = document.getElementById("messageError");
+        if (message.length >= maxLength) {
+            this.value = message.substring(0, maxLength); 
+            remaining = 0; 
+        }
+        if (remaining >= 0) {
+            charCountDiv.innerText = remaining + " characters remaining";
+            charCountDiv.classList.remove("text-danger"); 
+        } else {
+            charCountDiv.innerText = "Message must be less than 255 characters!";
+            charCountDiv.classList.add("text-danger"); 
+        }
+    });
+</script>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

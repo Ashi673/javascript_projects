@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Game</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+.game-container {
+    display: grid;
+    grid-template-columns: repeat(5, 100px);
+    gap: 10px;
+    justify-content: center;
+    margin-top: 50px;
+}
+.card {
+    width: 100px;
+    height: 100px;
+    background-color: #feca57;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: transparent; 
+    font-weight: bold;
+    transform: scale(1);
+    transition: transform 0.3s ease;
+    position: relative;           
+}
+.card .card-text {
+    position: absolute;
+    transform: rotateY(0deg); 
+    transition: transform 0.3s ease;
+}
+.card.flipped {
+    background-color: #badc58;
+}
+.card.flipped .card-text {
+    color: rgb(160, 5, 5); 
+    font-size: 20px;        
+}
+.card:hover {
+    transform: scale(1.1);
+}
+.timer-message {
+    text-align: center;
+    font-size: 30px;
+    margin-top: 20px;
+    font-weight: bold;
+    color: #ff9800; 
+}
+    </style>
+</head>
+<body>
+    <h1 class="text-center mt-3 text-warning">Let's Play A Game</h1>
+    <div class="game-container">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+    </div>
+    <div id="timerMessage" class="timer-message"></div>
+
+    <!-- Javascript Code for game -->
+<script>
+    const cards = document.querySelectorAll('.card');
+    let timerMessage = document.getElementById("timerMessage");
+    const wordList = [
+        "Hello", "Hello",
+        "Good Luck", "Good Luck",
+        "I Miss You", "I Miss You",
+        "Congrats", "Congrats",
+        "Welcome", "Welcome",
+        "Cheers", "Cheers",
+        "Love", "Love",
+        "Smile", "Smile",
+        "Hope", "Hope",
+        "Dream", "Dream",
+        ]; 
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+    const shuffledWords = shuffle(wordList);
+
+    cards.forEach((card, index) => {
+        card.dataset.value = shuffledWords[index]; 
+        card.innerHTML = `<div class="card-text">${card.dataset.value}</div>`; 
+        card.style.color = 'transparent'; 
+    });
+    
+    let flippedCards = [];
+    let matchedCards = 0;
+    let gameTimer = 90; 
+    let gameOver = false;
+
+    const countdown = setInterval(() => {
+        if (gameTimer > 0 && !gameOver) {
+            gameTimer--;
+            const minutes = Math.floor(gameTimer / 60);
+            const seconds = gameTimer % 60;
+            timerMessage.textContent = `Time Left: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+        } else if (gameTimer === 0 && matchedCards < cards.length) {
+            timerMessage.textContent = "You Lost! Time's Up!";
+            clearInterval(countdown); 
+            setTimeout(() => {
+                window.location.reload(); 
+            }, 2000);
+        }
+    }, 1000);
+
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            
+            if (card.classList.contains('flipped') || flippedCards.length === 2 || gameOver) return;
+            card.classList.add('flipped');
+            card.style.color = 'black'; 
+            flippedCards.push(card);
+            if (flippedCards.length === 2) {
+                checkMatch();
+            }
+        });
+    });
+
+    function checkMatch() {
+        const [card1, card2] = flippedCards;
+        if (card1.dataset.value === card2.dataset.value) {
+            matchedCards += 2;
+            flippedCards = []; 
+            if (matchedCards === cards.length) {
+                setTimeout(() => {
+                    gameOver = true;
+                    timerMessage.textContent = "You Win! All cards are matched!";
+                    clearInterval(countdown); 
+                }, 500);
+            }
+        } else {
+            setTimeout(() => {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+                card1.style.color = 'transparent'; 
+                card2.style.color = 'transparent';
+                flippedCards = []; 
+            }, 1000);
+        }
+    }
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
