@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+<style>
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+.container {
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width:800px;
+    margin-top: 30px;
+}
+#profileImagePreview{
+    background-color: white;
+    width: 150px;
+    height: 150px;
+    margin-left: 45px;
+    margin-top: 15px;
+    border-radius: 50%;
+}
+.personal{
+    background-color: #130f40;
+    border-radius: 8px;
+
+}
+.section-title {
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 2px solid #f8f6f6;
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+}
+.prof{
+    color: #eeedf0;
+    margin-left: 10px;
+    font-family:Arial, Helvetica, sans-serif;
+}
+.row{
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+ul{
+ list-style: none;
+ font-size: 18px;
+ line-height: 40px;
+ text-transform: uppercase;
+ margin-left: -30px;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 personal py-2">
+                <div class=" section-title">
+                    <div id="profileImagePreview"></div> 
+                    <h4 class="text-white text-center mt-2">
+                        <div id="displayName"></div>
+                    </h4>
+                        <p id="displayProfession" class="prof text-center"></p>
+                </div>
+                <h5 class="text-white mb-3" style="font-weight: bold;">PERSONAL INFO</h5>
+                <div class="row">
+                    <div class="col-2 text-primary"><i class="fa-solid fa-phone"></i></div>
+                    <div class="col-10 text-white" id="displayContact"></div>
+                </div>
+                <div class="row gap-0">
+                    <div class="col-2 text-primary"><i class="fa-solid fa-id-card-clip"></i></div>
+                    <div class="col-10 text-white" id="displayCNIC"></div>
+                </div>
+                <div class="row">
+                    <div class="col-2 text-primary"><i class="fa-solid fa-envelope"></i></div>
+                    <div class="col-10 text-white" id="displayEmail"></div>
+                </div>
+                <div class="row">
+                    <div class="col-2 text-primary"><i class="fa-solid fa-flag"></i></div>
+                    <div class="col-10 text-white" id="displayCountry"></div>
+                </div>
+                <div class="row">
+                    <div class="col-2 text-primary"><i class="fa-solid fa-mosque"></i></div>
+                    <div class="col-10 text-white" id="displayReligion"></div>
+                </div>
+                <div class="row">
+                    <div class="col-2 text-primary"><i class="fa-solid fa-house"></i></div>
+                    <div class="col-10 text-white" id="displayAddress"></div>
+                </div>
+                    <h5 class="text-white mb-3" style="font-weight: bold;">ACADEMIC INFO</h5>
+                    <div id="academicInfoContainer"></div> 
+                    <h5 class="text-white mb-3 mt-5" style="font-weight: bold;">Language</h5>
+                    <div class="col-10 text-white" id="displayLanguages"></div>    
+            </div>
+            <!-- Acedamic info -->
+            <div class="col-lg-8 acedemic">
+                <div>
+                    <h3 class="mt-1">PROFILE</h3>
+                    <p id="displayObjective" class="text-black text-align-justify"></p>
+                </div>
+                <div class="section">
+                    <h3 class="section-title">Skills</h3>
+                    <ul id="displaySkills"></ul>
+                </div>
+        
+                <!-- Experience -->
+                <div class="section">
+                    <h3 class="section-title">Experience</h3>
+                    <div id="displayExperience"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center align-items-center" style="height: 100px;">
+        <button class="btn btn-primary mt-3" id="downloadPdf">Download as PDF</button>
+    </div>
+    
+    <script>
+        // Fetch data from localStorage
+        const resumeData = JSON.parse(localStorage.getItem('resumeData'));
+        document.getElementById('displayName').textContent = resumeData.name;
+        document.getElementById('displayCNIC').textContent = resumeData.cnic;
+        document.getElementById('displayContact').textContent = resumeData.contact;
+        document.getElementById('displayEmail').textContent = resumeData.email;
+        document.getElementById('displayProfession').textContent = resumeData.profession;
+        document.getElementById('displayCountry').textContent = resumeData.country;
+        document.getElementById('displayReligion').textContent = resumeData.religion;
+        document.getElementById('displayObjective').textContent = resumeData.textAre;
+    //    document.getElementById('displayMaritalStatus').textContent = resumeData.maritalStatus;
+
+        document.getElementById('displayAddress').textContent = resumeData.address;
+
+
+        // Academic Information
+        const academicInfoContainer = document.getElementById('academicInfoContainer');
+    if (resumeData.academicInfo && resumeData.academicInfo.length > 0) {
+        resumeData.academicInfo.forEach((info, index) => {
+            const academicRow = `
+            <div class="row">
+                    <div class="col-12 text-primary">
+                         ${info.yearOfStart}<strong>-</strong>${info.yearOfCompletion}
+                    </div>
+                    <div class="col-12 text-white">
+                        <strong>${info.className}</strong>
+                    </div>
+                    <div class="col-12 text-white">
+                       ${info.marks} 
+                    </div>
+                    <div class="col-12 text-white">
+                        ${info.instituteName}
+                    </div>
+                </div>
+            `;
+            academicInfoContainer.innerHTML += academicRow;
+        });
+    }
+
+        // Skills
+        const skillsContainer = document.getElementById('displaySkills');
+resumeData.skills.forEach((skillData, index) => {
+
+    const skillRow = document.createElement('div');
+    skillRow.classList.add('row', 'mb-3');
+    const skillCol = document.createElement('div');
+    skillCol.classList.add('col-4');
+    skillCol.textContent = skillData.skill;  
+    const proficiencyCol = document.createElement('div');
+    proficiencyCol.classList.add('col-8');
+    const progressContainer = document.createElement('div');
+    progressContainer.classList.add('progress');
+    const progressBar = document.createElement('div');
+    progressBar.classList.add('progress-bar');
+    progressBar.setAttribute('role', 'progressbar');
+    progressBar.setAttribute('aria-valuenow', skillData.proficiency);
+    progressBar.setAttribute('aria-valuemin', '0');
+    progressBar.setAttribute('aria-valuemax', '100');
+    progressBar.style.width = `${skillData.proficiency}%`;
+   progressContainer.appendChild(progressBar);
+    proficiencyCol.appendChild(progressContainer);
+    skillRow.appendChild(skillCol);
+    skillRow.appendChild(proficiencyCol);
+    skillsContainer.appendChild(skillRow);
+});
+
+
+        // Experience
+        const experienceContainer = document.getElementById('displayExperience');
+        resumeData.experiences.forEach((exp, index) => {
+        const expRow = document.createElement('div');
+        expRow.classList.add('row', 'mb-2');
+        const dateColumn = document.createElement('div');
+        dateColumn.classList.add('col-4');
+        dateColumn.textContent = `${exp.startYear} - ${exp.completionYear}`;
+        const experienceColumn = document.createElement('div');
+        experienceColumn.classList.add('col-8');
+        experienceColumn.textContent = exp.experience;
+        expRow.appendChild(dateColumn);
+        expRow.appendChild(experienceColumn);
+
+        experienceContainer.appendChild(expRow);
+});
+
+        // Objective
+        document.getElementById('displayObjective').textContent = resumeData.textAre;
+
+        const displayLanguagesContainer = document.getElementById('displayLanguages');
+
+console.log(resumeData.languages);
+
+if (resumeData.languages.length > 0) {
+    resumeData.languages.forEach((lang) => {
+        const { language, proficiency } = lang;
+        if (!language || proficiency === undefined) {
+            console.error('Missing data for language:', lang);
+        }
+        const languageRow = document.createElement('div');
+        languageRow.classList.add('mb-3');
+        const languageLabel = document.createElement('div');
+        languageLabel.textContent = `${language}`;
+        languageLabel.classList.add('mb-1', 'font-weight-bold');
+        const progressContainer = document.createElement('div');
+        progressContainer.classList.add('progress');
+
+        const progressBar = document.createElement('div');
+        progressBar.classList.add('progress-bar');
+        progressBar.setAttribute('role', 'progressbar');
+        progressBar.setAttribute('aria-valuenow', proficiency);
+        progressBar.setAttribute('aria-valuemin', '0');
+        progressBar.setAttribute('aria-valuemax', '100');
+        progressBar.style.width = `${proficiency}%`;
+
+        progressContainer.appendChild(progressBar);
+        languageRow.appendChild(languageLabel);
+        languageRow.appendChild(progressContainer);
+
+        displayLanguagesContainer.appendChild(languageRow);
+    });
+} else {
+    displayLanguagesContainer.textContent = 'No languages selected.';
+}
+document.getElementById('downloadPdf').addEventListener('click', function() {
+    const element = document.querySelector('.container'); 
+    const options = {
+        filename: 'resume.pdf',  
+        margin: 10, 
+        html2canvas: { scale: 2 },  
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(options).save();
+});
+
+
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+</body>
+</html>
